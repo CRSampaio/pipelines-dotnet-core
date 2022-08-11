@@ -38,9 +38,11 @@ stages:
         runOnce:
          deploy:
            steps:
-             - task: DownloadBuildArtifacts@0
-               displayName: 'Downloading build'
+             - task: CopyFiles@2
+               displayName: 'Copying files to web server folders'
                inputs:
-                 buildType: 'current'
-                 artifactName: 'WebApp'
-                 downloadPath: '/var/www/example/'
+                 SourceFolder: '$(Build.ArtifactStagingDirectory)/WebApp'
+                 Contents: '**'
+                 TargetFolder: '/var/www/example/'
+                 CleanTargetFolder: true
+                 OverWrite: true
