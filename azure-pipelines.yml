@@ -41,7 +41,7 @@ stages:
              - task: CopyFiles@2
                displayName: 'Copying files to web server folders'
                inputs:
-                 SourceFolder: '$(Build.ArtifactStagingDirectory)/WebApp'
+                 SourceFolder: '$(Pipeline.Workspace)/WebApp'
                  Contents: '**'
                  TargetFolder: '/var/www/example/'
                  CleanTargetFolder: true
