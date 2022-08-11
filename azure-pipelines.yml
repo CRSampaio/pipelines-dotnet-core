@@ -38,12 +38,9 @@ stages:
         runOnce:
          deploy:
            steps:
-            #  - download: current
-            #    displayName: 'Downloading build'
-            #    artifact: WebApp
              - task: DownloadBuildArtifacts@0
                displayName: 'Downloading build'
                inputs:
                  buildType: 'current'
                  artifactName: 'WebApp'
-                 downloadPath: '/var/www/example'
+                 downloadPath: '/var/www/example/'
