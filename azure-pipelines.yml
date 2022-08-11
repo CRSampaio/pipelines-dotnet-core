@@ -7,16 +7,23 @@ trigger:
 - none
 
 stages:
-- stage: Build
+- stage: Build & Generate Artifact
   variables:
-    buildConfiguration: 'Release'
+    buildConfiguration: 'Debug'
   jobs:
   - job: BuildJob
     pool:
       vmImage: ubuntu-latest
     steps:
-      - script: dotnet build --configuration $(buildConfiguration)
+      - script: mkdir /app/
         displayName: 'dotnet build $(buildConfiguration)'
+      - script: dotnet publish --configuration $(buildConfiguration) --output /app/
+        displayName: 'dotnet publish $(buildConfiguration)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '/app/'
+          ArtifactName: 'WebApp'
+          publishLocation: 'Container'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -30,11 +37,10 @@ stages:
         runOnce:
          deploy:
            steps:
-             - task: DotNetCoreCLI@2
+             - task: DownloadBuildArtifacts@0
                inputs:
-                 command: 'publish'
-                 publishWebProjects: false
-                 projects: '*.csproj'
-                 arguments: '-c Debug --output /var/www/example/'
-                 zipAfterPublish: false
-                 modifyOutputPath: false
+                  buildType: 'current'
+                  downloadType: 'single'
+                  artifactName: 'WebApp'
+                  downloadPath: '/var/www/example'
+                  extractTars: true
