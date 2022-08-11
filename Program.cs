@@ -23,6 +23,7 @@ namespace pipelines_dotnet_core
                 .ConfigureWebHostDefaults(builder =>
                 {
                     builder.UseStartup<Startup>();
+                    builder.UseUrls("http://127.0.0.1:80");
                 });
                 
     }
