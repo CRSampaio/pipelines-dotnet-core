@@ -15,15 +15,15 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-      - script: mkdir /app/
-        displayName: 'dotnet build $(buildConfiguration)'
-      - script: dotnet publish --configuration $(buildConfiguration) --output /app/
-        displayName: 'dotnet publish $(buildConfiguration)'
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '/app/'
-          ArtifactName: 'WebApp'
-          publishLocation: 'Container'
+      - script: mkdir $(Build.ArtifactStagingDirectory)/app/
+        displayName: 'Creating dir'
+
+      - script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/app/
+        displayName: 'Publish project'
+
+      - publish: '$(Build.ArtifactStagingDirectory)/app'
+        displayName: 'Publish artifact'
+        artifact: WebApp
 
 - stage: Deploy
   displayName: Deploy stage
@@ -37,10 +37,7 @@ stages:
         runOnce:
          deploy:
            steps:
-             - task: DownloadBuildArtifacts@0
-               inputs:
-                  buildType: 'current'
-                  downloadType: 'single'
-                  artifactName: 'WebApp'
-                  downloadPath: '/var/www/example'
-                  extractTars: true
+             - download: current
+               displayName: 'Downloading build'
+               artifact: WebApp
+               target: /var/www/example
